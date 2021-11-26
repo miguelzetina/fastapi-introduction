@@ -5,7 +5,7 @@ from enum import Enum
 from pydantic import BaseModel, Field
 
 # FastAPI
-from fastapi import Body, FastAPI, Path, Query
+from fastapi import status, Body, FastAPI, Path, Query
 
 app = FastAPI()
 
@@ -65,7 +65,9 @@ def home():
     return {"Hello": "World!"}
 
 
-@app.post("/person/new", response_model=PersonOut)
+@app.post(
+    path="/person/new", response_model=PersonOut, status_code=status.HTTP_201_CREATED
+)
 def create_person(person: Person = Body(...)):
     return person
 
