@@ -1,3 +1,4 @@
 fastapi
 uvicorn[standard]
 black
+python-multipart
