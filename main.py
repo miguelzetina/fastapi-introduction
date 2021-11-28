@@ -73,19 +73,22 @@ class LoginOut(BaseModel):
     message: str = Field(default="Login successfully")
 
 
-@app.get("/")
+@app.get("/", tags=["Home"])
 def home():
     return {"Hello": "World!"}
 
 
 @app.post(
-    path="/person/new", response_model=PersonOut, status_code=status.HTTP_201_CREATED
+    path="/person/new",
+    response_model=PersonOut,
+    status_code=status.HTTP_201_CREATED,
+    tags=["Person"],
 )
 def create_person(person: Person = Body(...)):
     return person
 
 
-@app.get("/person/detail")
+@app.get("/person/detail", tags=["Person"])
 def show_person(
     name: str = Query(
         ...,
@@ -105,17 +108,16 @@ def show_person(
     return {name: age}
 
 
-@app.get("/person/detail/{person_id}")
+@app.get("/person/detail/{person_id}", tags=["Person"])
 def show_person(person_id: int = Path(..., gt=0, example=123)):
     if person_id not in [1, 2, 3]:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="¡Person doesn't exists!"
+            status_code=status.HTTP_404_NOT_FOUND, detail="¡Person doesn't exists!"
         )
     return {person_id: "It exists!"}
 
 
-@app.put("/person/{person_id}")
+@app.put("/person/{person_id}", tags=["Person"])
 def update_person(
     person_id: int = Path(
         ..., title="Person ID", description="This is the person ID", gt=0, example=123
@@ -126,12 +128,17 @@ def update_person(
     return person
 
 
-@app.post(path="/login", response_model=LoginOut, status_code=status.HTTP_200_OK)
+@app.post(
+    path="/login",
+    response_model=LoginOut,
+    status_code=status.HTTP_200_OK,
+    tags=["Person", "Login"],
+)
 def login(username: str = Form(...), password: str = Form(...)):
     return LoginOut(username=username)
 
 
-@app.post(path="/contact", status_code=status.HTTP_200_OK)
+@app.post(path="/contact", status_code=status.HTTP_200_OK, tags=["Contact"])
 def contact(
     first_name: str = Form(..., max_length=20, min_length=1),
     last_name: str = Form(..., max_length=20, min_length=1),
@@ -143,7 +150,7 @@ def contact(
     return user_agent
 
 
-@app.post(path="/post-image")
+@app.post(path="/post-image", tags=["Image"])
 def post_image(image: UploadFile = File(...)):
     return {
         "filename": image.filename,
